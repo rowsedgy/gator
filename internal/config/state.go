@@ -5,16 +5,16 @@ import (
 	"fmt"
 )
 
-type state struct {
+type State struct {
 	State *Config
 }
 
-func handlerLogin(s *state, cmd command) error {
-	if len(cmd.Arguments) == 0 || len(cmd.Arguments) > 1 {
+func HandlerLogin(s *State, cmd Command) error {
+	if len(cmd.Arguments) == 0 {
 		return errors.New("no arguments provided")
 	}
 
-	userName := cmd.Arguments[0]
+	userName := cmd.Arguments[1]
 
 	err := s.State.SetUser(userName)
 	if err != nil {

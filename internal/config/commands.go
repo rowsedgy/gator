@@ -1,10 +1,28 @@
 package config
 
-type command struct {
+type Command struct {
 	Name      string
 	Arguments []string
 }
 
-type commands struct {
-	Commands map[string]func(*state, command) error
+type Commands struct {
+	Commands map[string]func(*State, Command) error
+}
+
+func (c *Commands) Run(s *State, cmd Command) error {
+	com, ok := c.Commands[cmd.Name]
+	if ok {
+		err := com(s, cmd)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Commands) Register(name string, f func(*State, Command) error) {
+	_, ok := c.Commands[name]
+	if !ok {
+		c.Commands[name] = f
+	}
 }

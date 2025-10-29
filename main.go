@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/rowsedgy/gator/internal/config"
 )
@@ -12,21 +13,26 @@ func main() {
 	if err != nil {
 		log.Fatalf("error reading config: %v", err)
 	}
-	fmt.Printf("Read config: %+v\n", cfg)
+	fmt.Printf("Read config: %+v", cfg)
 
-	err = cfg.SetUser("emanuel")
-	if err != nil {
-		log.Fatalf("error setting user: %v", err)
+	state := config.State{
+		State: &cfg,
 	}
 
-	cfg, err = config.Read()
-	if err != nil {
-		log.Fatalf("couldn't set current user: %v", err)
+	commands := config.Commands{
+		Commands: make(map[string]func(*config.State, config.Command) error),
 	}
 
-	if err != nil {
-		log.Fatalf("error reading config: %v", err)
+	userArgs := os.Args[1:]
+	if len(userArgs) < 2 {
+		log.Fatalf("at least one argument required")
 	}
 
-	fmt.Printf("Read config again: %+v\n", cfg)
+	command := config.Command{
+		Name:      userArgs[1],
+		Arguments: userArgs[2:],
+	}
+
+	commands.Register(command.Name, config.HandlerLogin)
+
 }
