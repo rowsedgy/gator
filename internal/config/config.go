@@ -6,12 +6,12 @@ import (
 	"path/filepath"
 )
 
+const configFileName = ".gatorconfig.json"
+
 type Config struct {
 	DBURL           string `json:"db_url"`
 	CurrentUserName string `json:"current_user_name"`
 }
-
-const configFileName = ".gatorconfig.json"
 
 func (c *Config) SetUser(user string) error {
 	c.CurrentUserName = user
