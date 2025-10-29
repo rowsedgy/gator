@@ -13,7 +13,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error reading config: %v", err)
 	}
-	fmt.Printf("Read config: %+v", cfg)
+	fmt.Printf("Read config: %+v\n", cfg)
 
 	state := config.State{
 		State: &cfg,
@@ -23,16 +23,20 @@ func main() {
 		Commands: make(map[string]func(*config.State, config.Command) error),
 	}
 
-	userArgs := os.Args[1:]
-	if len(userArgs) < 2 {
+	if len(os.Args) < 2 {
 		log.Fatalf("at least one argument required")
 	}
 
 	command := config.Command{
-		Name:      userArgs[1],
-		Arguments: userArgs[2:],
+		Name:      os.Args[1],
+		Arguments: os.Args[2:],
 	}
 
 	commands.Register(command.Name, config.HandlerLogin)
+
+	err = commands.Run(&state, command)
+	if err != nil {
+		log.Fatalf("error running command %v", err)
+	}
 
 }

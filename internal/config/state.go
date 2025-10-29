@@ -14,7 +14,7 @@ func HandlerLogin(s *State, cmd Command) error {
 		return errors.New("no arguments provided")
 	}
 
-	userName := cmd.Arguments[1]
+	userName := cmd.Arguments[0]
 
 	err := s.State.SetUser(userName)
 	if err != nil {
@@ -22,6 +22,7 @@ func HandlerLogin(s *State, cmd Command) error {
 	}
 
 	fmt.Printf("The user %s has been set.\n", userName)
+	fmt.Printf("%+v", s.State)
 	return nil
 
 }
