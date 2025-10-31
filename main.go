@@ -8,9 +8,11 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/rowsedgy/gator/internal/config"
+	"github.com/rowsedgy/gator/internal/database"
 )
 
 type state struct {
+	db  *database.Queries
 	cfg *config.Config
 }
 
@@ -22,8 +24,14 @@ func main() {
 	fmt.Printf("Read config: %+v\n", cfg)
 
 	db, err := sql.Open("postgres", cfg.DBURL)
+	if err != nil {
+		log.Fatalf("Error opening db %v", err)
+	}
+
+	dbQueries := database.New(db)
 
 	programState := state{
+		db:  dbQueries,
 		cfg: &cfg,
 	}
 
@@ -32,19 +40,19 @@ func main() {
 	}
 
 	commands.Register("login", handlerLogin)
+	commands.Register("register", handlerRegister)
 
 	if len(os.Args) < 2 {
 		log.Fatalf("at least one argument required")
 	}
 
-	command := command{
-		Name:      os.Args[1],
-		Arguments: os.Args[2:],
-	}
+	cmdName := os.Args[1]
+	cmdArgs := os.Args[2:]
 
-	err = commands.Run(&programState, command)
+	err = commands.Run(&programState, command{Name: cmdName, Arguments: cmdArgs})
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("error: %v", err)
+		os.Exit(1)
 	}
 
 }
