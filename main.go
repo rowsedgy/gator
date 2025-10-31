@@ -5,8 +5,13 @@ import (
 	"log"
 	"os"
 
+	_ "github.com/lib/pq"
 	"github.com/rowsedgy/gator/internal/config"
 )
+
+type state struct {
+	cfg *config.Config
+}
 
 func main() {
 	cfg, err := config.Read()
@@ -15,28 +20,28 @@ func main() {
 	}
 	fmt.Printf("Read config: %+v\n", cfg)
 
-	state := config.State{
-		State: &cfg,
+	programState := state{
+		cfg: &cfg,
 	}
 
-	commands := config.Commands{
-		Commands: make(map[string]func(*config.State, config.Command) error),
+	commands := commands{
+		commands: make(map[string]func(*state, command) error),
 	}
+
+	commands.Register("login", handlerLogin)
 
 	if len(os.Args) < 2 {
 		log.Fatalf("at least one argument required")
 	}
 
-	command := config.Command{
+	command := command{
 		Name:      os.Args[1],
 		Arguments: os.Args[2:],
 	}
 
-	commands.Register(command.Name, config.HandlerLogin)
-
-	err = commands.Run(&state, command)
+	err = commands.Run(&programState, command)
 	if err != nil {
-		log.Fatalf("error running command %v", err)
+		log.Fatal(err)
 	}
 
 }
