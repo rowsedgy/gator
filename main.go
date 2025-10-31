@@ -41,6 +41,8 @@ func main() {
 
 	commands.Register("login", handlerLogin)
 	commands.Register("register", handlerRegister)
+	commands.Register("reset", handlerReset)
+	commands.Register("users", handlerListUsers)
 
 	if len(os.Args) < 2 {
 		log.Fatalf("at least one argument required")

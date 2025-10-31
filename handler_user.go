@@ -61,3 +61,21 @@ func handlerRegister(s *state, cmd command) error {
 
 	return nil
 }
+
+func handlerListUsers(s *state, cmd command) error {
+	currentUser := s.cfg.CurrentUserName
+
+	users, err := s.db.GetUsers(context.Background())
+	if err != nil {
+		return err
+	}
+
+	for _, user := range users {
+		if user.Name == currentUser {
+			fmt.Printf("* %s (current)\n", user.Name)
+		} else {
+			fmt.Printf("* %s\n", user.Name)
+		}
+	}
+	return nil
+}
