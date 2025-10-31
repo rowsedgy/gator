@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -19,6 +20,8 @@ func main() {
 		log.Fatalf("error reading config: %v", err)
 	}
 	fmt.Printf("Read config: %+v\n", cfg)
+
+	db, err := sql.Open("postgres", cfg.DBURL)
 
 	programState := state{
 		cfg: &cfg,
