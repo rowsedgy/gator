@@ -97,7 +97,7 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 }
 
 const truncateUsersTable = `-- name: TruncateUsersTable :exec
-TRUNCATE users
+TRUNCATE TABLE users, feeds RESTART IDENTITY CASCADE
 `
 
 func (q *Queries) TruncateUsersTable(ctx context.Context) error {

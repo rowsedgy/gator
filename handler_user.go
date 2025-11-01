@@ -43,8 +43,8 @@ func handlerRegister(s *state, cmd command) error {
 	// Create user
 	u, err := s.db.CreateUser(context.Background(), database.CreateUserParams{
 		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 		Name:      userName,
 	})
 
@@ -67,15 +67,16 @@ func handlerListUsers(s *state, cmd command) error {
 
 	users, err := s.db.GetUsers(context.Background())
 	if err != nil {
-		return err
+		return fmt.Errorf("couldn't list users: %w", err)
 	}
 
 	for _, user := range users {
 		if user.Name == currentUser {
 			fmt.Printf("* %s (current)\n", user.Name)
-		} else {
-			fmt.Printf("* %s\n", user.Name)
+			continue
 		}
+		fmt.Printf("* %s\n", user.Name)
+
 	}
 	return nil
 }
