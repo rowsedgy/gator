@@ -77,14 +77,18 @@ func handlerFollow(s *state, cmd command) error {
 		return fmt.Errorf("usage: follow <feed_url>")
 	}
 
-	activeUser := s.cfg.CurrentUserName
+	activeUser, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+	if err != nil {
+		return err
+	}
+
 	feedUrl := cmd.Arguments[0]
 
 	feedFollowRow, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
-		Name:      activeUser,
+		Name:      activeUser.Name,
 		Url:       feedUrl,
 	})
 	if err != nil {
@@ -104,13 +108,17 @@ func handlerFollow(s *state, cmd command) error {
 }
 
 func handlerFollowing(s *state, cmd command) error {
-	currentUser := s.cfg.CurrentUserName
-	follows, err := s.db.GetFeedFollowsByUser(context.Background(), currentUser)
+	currentUser, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
 	if err != nil {
-		return fmt.Errorf("error getting follows for user %s: %w", currentUser, err)
+		return err
 	}
 
-	fmt.Printf("Feeds for current user (%s)\n", currentUser)
+	follows, err := s.db.GetFeedFollowsByUser(context.Background(), currentUser.Name)
+	if err != nil {
+		return fmt.Errorf("error getting follows for user %s: %w", currentUser.Name, err)
+	}
+
+	fmt.Printf("Feeds for current user (%s)\n", currentUser.Name)
 	for _, follow := range follows {
 		fmt.Printf("- '%s'\n", follow.FeedName)
 	}
