@@ -1,7 +1,18 @@
 package main
 
-import "github.com/rowsedgy/gator/internal/database"
+import (
+	"context"
+	"fmt"
+
+	"github.com/rowsedgy/gator/internal/database"
+)
 
 func middewareLoggedIn(handler func(s *state, cmd command, user database.User) error) func(*state, command) error {
-	return nil
+	return func(s *state, cmd command) error {
+		user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+		if err != nil {
+			return fmt.Errorf("user not logged-in: %w", err)
+		}
+		return handler(s, cmd, user)
+	}
 }

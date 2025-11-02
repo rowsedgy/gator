@@ -44,10 +44,11 @@ func main() {
 	commands.Register("reset", handlerReset)
 	commands.Register("users", handlerListUsers)
 	commands.Register("agg", handlerAgg)
-	commands.Register("addfeed", handlerAddFeed)
+	commands.Register("addfeed", middewareLoggedIn(handlerAddFeed))
 	commands.Register("feeds", handlerFeeds)
-	commands.Register("follow", handlerFollow)
-	commands.Register("following", handlerFollowing)
+	commands.Register("follow", middewareLoggedIn(handlerFollow))
+	commands.Register("following", middewareLoggedIn(handlerFollowing))
+	commands.Register("unfollow", middewareLoggedIn(handlerFeedUnfollow))
 
 	if len(os.Args) < 2 {
 		log.Fatalf("at least one argument required")
