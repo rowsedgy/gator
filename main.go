@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error reading config: %v", err)
 	}
-	fmt.Printf("Read config: %+v\n", cfg)
+	// fmt.Printf("Read config: %+v\n", cfg)
 
 	db, err := sql.Open("postgres", cfg.DBURL)
 	if err != nil {
@@ -45,6 +45,7 @@ func main() {
 	commands.Register("users", handlerListUsers)
 	commands.Register("agg", handlerAgg)
 	commands.Register("addfeed", handlerAddFeed)
+	commands.Register("feeds", handlerFeeds)
 
 	if len(os.Args) < 2 {
 		log.Fatalf("at least one argument required")
