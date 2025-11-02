@@ -46,6 +46,8 @@ func main() {
 	commands.Register("agg", handlerAgg)
 	commands.Register("addfeed", handlerAddFeed)
 	commands.Register("feeds", handlerFeeds)
+	commands.Register("follow", handlerFollow)
+	commands.Register("following", handlerFollowing)
 
 	if len(os.Args) < 2 {
 		log.Fatalf("at least one argument required")
@@ -56,7 +58,7 @@ func main() {
 
 	err = commands.Run(&programState, command{Name: cmdName, Arguments: cmdArgs})
 	if err != nil {
-		fmt.Println("error: %v", err)
+		fmt.Printf("error: %v", err)
 		os.Exit(1)
 	}
 
