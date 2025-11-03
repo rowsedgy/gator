@@ -32,9 +32,14 @@ func handlerBrowse(s *state, cmd command, user database.User) error {
 	fmt.Printf("Printing posts for current user (%s). Limit set to %d:\n", user.Name, limit)
 	for _, post := range posts {
 		fmt.Printf("* Title: %s\n", post.Title)
-		fmt.Printf("* Publish date: %s\n", post.PublishedAt)
+		if post.PublishedAt.Valid {
+			fmt.Printf("* Publish date: %s\n", post.PublishedAt.Time)
+		}
 		fmt.Printf("* URL: %s\n", post.Url)
-		fmt.Printf("* Description: %s\n", post.Description)
+		if post.Description.Valid {
+			fmt.Printf("* Description: %s\n", post.Description.String)
+		}
+
 		fmt.Println("=========================================")
 	}
 
