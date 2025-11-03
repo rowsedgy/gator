@@ -50,6 +50,7 @@ func main() {
 	commands.Register("follow", middewareLoggedIn(handlerFollow))
 	commands.Register("following", middewareLoggedIn(handlerFollowing))
 	commands.Register("unfollow", middewareLoggedIn(handlerFeedUnfollow))
+	commands.Register("browse", middewareLoggedIn(handlerBrowse))
 
 	if len(os.Args) < 2 {
 		log.Fatalf("at least one argument required")
@@ -75,3 +76,9 @@ func middewareLoggedIn(handler func(s *state, cmd command, user database.User) e
 		return handler(s, cmd, user)
 	}
 }
+
+// func middlewareTicker(handler func(s *state, cmd command, time_between_req string) func(*state, command) error) {
+// 	return func(s *state, cmd command) error {
+
+// 	}
+// }

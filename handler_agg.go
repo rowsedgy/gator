@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/rowsedgy/gator/internal/database"
 )
 
@@ -57,9 +60,34 @@ func scrapeFeeds(s *state) error {
 		return fmt.Errorf("error fetching rss feed from url: %w", err)
 	}
 
-	fmt.Println("Printing feed item titles:")
+	fmt.Println("Adding posts to db")
 	for _, item := range rssFeed.Channel.Item {
-		fmt.Printf("* %s || Added on %v\n", item.Title, nextFeed.CreatedAt)
+		publishedAt := sql.NullTime{}
+		if t, err := time.Parse(time.RFC1123Z, item.PubDate); err == nil {
+			publishedAt = sql.NullTime{
+				Time:  t,
+				Valid: true,
+			}
+		}
+		err := s.db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:        uuid.New(),
+			CreatedAt: time.Now().UTC(),
+			UpdatedAt: time.Now().UTC(),
+			Title:     item.Title,
+			Url:       item.Link,
+			Description: sql.NullString{
+				String: item.Description,
+				Valid:  true,
+			},
+			PublishedAt: publishedAt,
+			FeedID:      nextFeed.ID,
+		})
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				continue
+			}
+			return fmt.Errorf("error creating post: %w", err)
+		}
 	}
 
 	return nil
