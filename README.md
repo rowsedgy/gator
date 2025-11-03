@@ -17,7 +17,7 @@ go install github.com/rowsedgy/gator@latest
 After that we need to create the file ~/.gatorconfig.json and put the Postgres database connection string inside along with a starting user, e.g:
 
 ```
-{"db_url":"postgres://postgres:@localhost:5432/gator?sslmode=disable","current_user_name":"holgith"}
+{"db_url":"postgres://postgres:@localhost:5432/gator?sslmode=disable"}
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ After that we need to create the file ~/.gatorconfig.json and put the Postgres d
 
     `gator register <user>`
 
-- Login (set that user as current user):
+- Login (set that user as current user). The user must exist:
     
     `gator login <user>`
 
